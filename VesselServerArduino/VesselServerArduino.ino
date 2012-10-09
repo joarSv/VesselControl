@@ -1,11 +1,14 @@
-#include <Servo.h> 
 /*
-  byte = 1 byte
-  char = 1 byte
-  word = 2 bytes
-  int = 2 bytes
-  long = 4 bytes
+	VesselControlArduino
+		Created 2012-10-09
+		Rasmus Jansson and Joar Svensson
+		Version 0.1
+		
 */
+
+#include <Servo.h> 
+
+// Initialize servos
 Servo servoX;
 Servo servoY;
 
@@ -18,9 +21,9 @@ void setup()
 
 void loop() 
 { 
-   int data = 0;
     if(Serial.available() >= 3)
     {
+	  int data = 0;
       data = Serial.read(); 
       if(data == 255)
       {
@@ -31,6 +34,7 @@ void loop()
     }
 }
 
+// Method for moving servo
 void moveServo(int servo, int angle) 
 {
   switch(servo)
@@ -41,9 +45,6 @@ void moveServo(int servo, int angle)
     case 2:
       servoY.write(angle);
       break;
-    /*case 3:
-      servoZ.write(angle);
-      break;*/
     default:
       break;
   }  
