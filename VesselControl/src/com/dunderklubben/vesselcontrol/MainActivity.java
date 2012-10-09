@@ -16,7 +16,7 @@ import android.widget.TextView;
 
 public class MainActivity extends Activity implements SensorEventListener {
 	private byte lastX, lastY;
-	private final byte THREASHOLD = 5;
+	private final byte THRESHOLD = 5;
 	PowerManager.WakeLock wakeLock;
 	private boolean paused;
 	
@@ -44,6 +44,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         lastY = 0;
         paused = false;
     }
+    
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
@@ -105,11 +106,11 @@ public class MainActivity extends Activity implements SensorEventListener {
 			byte byteX = map(x), byteY = map(y);
 			byte bX[] = {(byte)((int)1), byteX}, bY[] = {(byte)((int)2), byteY};
 			
-			if(byteX < lastX-THREASHOLD || byteX > lastX+THREASHOLD) {
+			if(byteX < lastX-THRESHOLD || byteX > lastX+THRESHOLD) {
 				client.send(bX);
 				lastX = byteX; 
 			}
-			if(byteY < lastY-THREASHOLD || byteY > lastY+THREASHOLD ) {
+			if(byteY < lastY-THRESHOLD || byteY > lastY+THRESHOLD ) {
 				client.send(bY);
 				lastY = byteY;
 			}
