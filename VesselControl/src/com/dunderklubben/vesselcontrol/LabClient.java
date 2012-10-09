@@ -52,9 +52,6 @@ public class LabClient {
 				PrintWriter writer = new PrintWriter(_client.getOutputStream());
 				writer.println(data);
 				writer.flush();
-				//OutputStream stream = _client.getOutputStream();
-				//stream.write(new byte[] {100,123,23,13,44,55,26});
-				//stream.flush();
 			} catch (IOException e) {
 				e.printStackTrace();
 				_connected = false;
