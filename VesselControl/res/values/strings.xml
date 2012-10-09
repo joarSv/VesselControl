@@ -1,0 +1,7 @@
+<resources>
+
+    <string name="app_name">Vessel Control</string>
+    <string name="menu_settings">Settings</string>
+    <string name="title_activity_main">Vessel Control</string>
+
+</resources>
