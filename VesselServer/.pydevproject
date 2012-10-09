@@ -7,6 +7,5 @@
 <pydev_property name="org.python.pydev.PYTHON_PROJECT_INTERPRETER">python26</pydev_property>
 <pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
 <path>C:\Python26\Lib\pyserial-2.6</path>
-<path>C:\Python26\ArcGIS10.0\Lib\pyserial-2.6</path>
 </pydev_pathproperty>
 </pydev_project>
