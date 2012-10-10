@@ -8,6 +8,8 @@
 bin/
 bin/*
 tmp/
+VesselControl/bin/
+VesselControl/bin/*
 *.tmp
 *.bak
 *.swp
