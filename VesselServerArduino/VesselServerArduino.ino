@@ -29,7 +29,8 @@ void loop()
       {
         int servo = Serial.read();
         int angle = Serial.read();  
-        moveServo(servo, angle);     
+        moveServo(servo, angle); 
+        Serial.println("Test");   
       }
     }
 }
