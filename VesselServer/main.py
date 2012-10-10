@@ -8,9 +8,10 @@
 
 from serial import Serial
 import SocketServer
+from threading import Thread
 
 # Define serial settings
-port = 'COM4'
+port = 'COM1'
 baudrate = 9600
 
 # Initiate serial connection
@@ -30,6 +31,14 @@ def move(servo, angle):
         print "Servo angle must be an integer between 0 and 180. Now it's " + str(angle)+ "\n"
         
 
+def readSerial():
+    count = 0
+    while True:
+        for line in ser.readline():  
+            print (count + ' received data: ' + line )
+            count+1
+        
+
 # This class contains the socket server
 class MyTCPHandler(SocketServer.BaseRequestHandler):
     
@@ -46,6 +55,11 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
                 angle = ord(self.data[1])
                 if(servo > 0 and servo< 4):
                     move(servo, angle)
+
+    try:
+        Thread(target=readSerial).start()
+    except Exception, errtxt:
+            print errtxt
 
 # Define socket server settings
 socketAddress = '0.0.0.0'
