@@ -1,3 +1,10 @@
+#
+#    VesselServer
+#        Created 2012-10-09
+#        Rasmus Jansson and Joar Svensson
+#        Version 0.1
+#        
+
 
 from serial import Serial
 import SocketServer
