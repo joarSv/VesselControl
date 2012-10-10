@@ -136,7 +136,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
     		sensorManager.unregisterListener(this);
     	}
     }
-    
+    //Click event that tries to connect to the given server
     public void connect(View v) {
     	lblNotification.setText("");
 		btnConnect.setEnabled(false);
@@ -157,6 +157,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
 
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {		
 	}
+	//Event that fetches the accelerometer values and sends them to the arduino
 	public void onSensorChanged(SensorEvent event) {
 		if(client.isConnected()) {
 			float x = event.values[0], y = event.values[1];
@@ -175,7 +176,9 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		else
 			sensorManager.unregisterListener(this);
 	}
-
+	//Maps a float value (-7.0 - 7.0) to a byte value (0 - 180)
+	//keeping the ratio i.e -7.0 will become 0 and 7.0 will become 180 and
+	//thus 0 will become 90 
 	public byte map(float value) {
 		float fMAX = 7, fMIN = -7;
 		int bMAX = 180, bMIN = 0;
