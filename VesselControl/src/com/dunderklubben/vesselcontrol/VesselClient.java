@@ -8,11 +8,11 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import android.os.AsyncTask;
 
-public class LabClient {
+public class VesselClient {
 	private boolean _connected;
 	private Socket _client;
 	
-	public LabClient () {
+	public VesselClient () {
 		_connected = false;
 		_client = new Socket();
 	}
@@ -32,7 +32,7 @@ public class LabClient {
 		}
 	}	
 	public boolean connect(String ip){
-		return connect(ip, 1000);
+		return connect(ip, 10000);
 	}
 	
 	public void close() {

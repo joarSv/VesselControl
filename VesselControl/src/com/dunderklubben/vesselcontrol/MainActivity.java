@@ -6,49 +6,99 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.os.PowerManager;
+import android.preference.PreferenceManager;
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class MainActivity extends Activity implements SensorEventListener {
+public class MainActivity extends Activity implements SensorEventListener  {
 	private byte lastX, lastY;
-	private final byte THRESHOLD = 5;
 	PowerManager.WakeLock wakeLock;
+	SharedPreferences sharedPrefs;
+	
+	
 	private boolean paused;
 	
+	//Controls
 	private EditText txtIp;
 	private Button btnConnect;
-	private LabClient client;
+	private VesselClient client;
 	private SensorManager sensorManager;
 	private TextView lblNotification;
 	
+	//Settings
+	private boolean stay_awake;
+	private int threshold;
+	
+	private OnSharedPreferenceChangeListener settingsListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
+		  public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
+			  if(key == "stay_awake") {
+					stay_awake = prefs.getBoolean("stay_awake", true);
+					if(stay_awake)
+						wakeLock.acquire();
+					else
+						wakeLock.release();
+				}		
+				else if(key == "threshold") {
+			        threshold = Integer.parseInt(sharedPrefs.getString("threshold", "5"));
+				}
+		  }
+	};
+
+	
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate(savedInstanceState);        
         setContentView(R.layout.activity_main);
-        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
-        wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "VesselControl");
-        wakeLock.acquire();
-
-        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);        
         
+        //Get system services
+        sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        sharedPrefs.registerOnSharedPreferenceChangeListener(settingsListener);
+        PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE); 
+        sensorManager = (SensorManager)getSystemService(SENSOR_SERVICE);              
+        wakeLock = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "VesselControl");
+        
+        //Get preferences
+        stay_awake = sharedPrefs.getBoolean("stay_awake", true);	
+        threshold = Integer.parseInt(sharedPrefs.getString("threshold", "5"));
+        
+        //Get controls
         lblNotification = (TextView)findViewById(R.id.lblNotification);
         btnConnect = (Button)findViewById(R.id.btnConnect);
-        txtIp = (EditText)findViewById(R.id.txtIp);
-        client = new LabClient();
+        txtIp = (EditText)findViewById(R.id.txtIp);        
+        
+        //Init misc values
+        client = new VesselClient();
         lastX = 0; 
         lastY = 0;
         paused = false;
+        
+        if(stay_awake)
+        	wakeLock.acquire();
     }
     
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.activity_main, menu);
         return true;
+    }
+    
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {    
+    	switch (item.getItemId()) {   
+			case R.id.menu_settings:   
+				startActivity(new Intent(this, SettingsActivity.class));    
+				return true;    
+		}
+		return false;
     }
     
     @Override
@@ -59,13 +109,16 @@ public class MainActivity extends Activity implements SensorEventListener {
     		sensorManager.unregisterListener(this);
     		paused = true;
     	}	
-    	wakeLock.release();
+    	if(stay_awake)
+    		wakeLock.release();
     }
     
     @Override
     public void onResume() {
     	super.onResume();
-    	wakeLock.acquire();
+    	if(stay_awake)
+    		wakeLock.acquire();
+    	
     	if(paused) {
     		connect(null);
     		paused = false;
@@ -75,11 +128,12 @@ public class MainActivity extends Activity implements SensorEventListener {
     @Override
     public void onDestroy() {
     	super.onDestroy();
-    	wakeLock.release();
+    	if(stay_awake)
+    		wakeLock.release();
     	if(client.isConnected()) {
     		client.close();
     		sensorManager.unregisterListener(this);
-    	}	
+    	}
     }
     
     public void connect(View v) {
@@ -106,11 +160,11 @@ public class MainActivity extends Activity implements SensorEventListener {
 			byte byteX = map(x), byteY = map(y);
 			byte bX[] = {(byte)((int)1), byteX}, bY[] = {(byte)((int)2), byteY};
 			
-			if(byteX < lastX-THRESHOLD || byteX > lastX+THRESHOLD) {
+			if(byteX < lastX-threshold || byteX > lastX+threshold) {
 				client.send(bX);
 				lastX = byteX; 
 			}
-			if(byteY < lastY-THRESHOLD || byteY > lastY+THRESHOLD ) {
+			if(byteY < lastY-threshold || byteY > lastY+threshold ) {
 				client.send(bY);
 				lastY = byteY;
 			}
