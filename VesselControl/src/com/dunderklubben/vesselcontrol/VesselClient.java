@@ -5,7 +5,10 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.concurrent.TimeUnit;
+
 import android.os.AsyncTask;
 
 public class VesselClient {
@@ -15,13 +18,19 @@ public class VesselClient {
 	public VesselClient () {
 		_connected = false;
 		_client = new Socket();
+		try {
+			_client.setSoTimeout(2000);
+		} catch (SocketException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	public boolean connect(String ip, int port) {
 		ConnectTask task = new ConnectTask(_client);
 		task.execute(ip, "" + port);
 		try {
-			boolean ret = task.get();
+			boolean ret = task.get(2, TimeUnit.SECONDS);
 			if(!ret) //Socket is closed and will not be able to connect... recreate the socket.
 				_client = new Socket();
 			

@@ -138,10 +138,11 @@ public class MainActivity extends Activity implements SensorEventListener  {
     }
     
     public void connect(View v) {
+    	lblNotification.setText("");
+		btnConnect.setEnabled(false);
     	if(!client.isConnected()) {
     		if(client.connect(txtIp.getText().toString())) {
     			btnConnect.setText("Disconnect");
-    			lblNotification.setText("");
     			sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
     		} else {
     			lblNotification.setText("Could not connect to the server");
@@ -151,6 +152,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
     		sensorManager.unregisterListener(this);
     		btnConnect.setText("Connect");
     	}
+    	btnConnect.setEnabled(true);
     }
 
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {		
