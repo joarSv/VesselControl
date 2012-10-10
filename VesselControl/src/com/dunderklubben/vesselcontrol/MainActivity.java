@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,12 +21,11 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class MainActivity extends Activity implements SensorEventListener  {
-	private byte lastX, lastY;
 	PowerManager.WakeLock wakeLock;
 	SharedPreferences sharedPrefs;
 	
-	
 	private boolean paused;
+	private byte lastX, lastY;
 	
 	//Controls
 	private EditText txtIp;
@@ -40,14 +40,15 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	
 	private OnSharedPreferenceChangeListener settingsListener = new SharedPreferences.OnSharedPreferenceChangeListener() {
 		  public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
-			  if(key == "stay_awake") {
+			  Log.d("SKIP", "Setting changed: " + key);
+			  if(key.equalsIgnoreCase("stay_awake")) {
 					stay_awake = prefs.getBoolean("stay_awake", true);
 					if(stay_awake)
 						wakeLock.acquire();
 					else
 						wakeLock.release();
 				}		
-				else if(key == "threshold") {
+				else if(key.equalsIgnoreCase("threshold")) {
 			        threshold = Integer.parseInt(sharedPrefs.getString("threshold", "5"));
 				}
 		  }
