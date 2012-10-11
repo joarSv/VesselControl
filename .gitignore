@@ -11,6 +11,8 @@ tmp/
 VesselControl/bin/
 VesselControl/bin/*
 *.tmp
+*.apk
+*.cache
 *.bak
 *.swp
 *~.nib
