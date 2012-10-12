@@ -13,8 +13,9 @@ from threading import Thread
 # Define serial settings
 # Linux: /dev/ttyACM0
 # Windows: COM1
-port = '/dev/ttyACM0'
+port = 'COM1'#'/dev/ttyACM0'
 baudrate = 9600
+connected = False
 
 # Initiate serial connection
 ser = Serial(port, baudrate, timeout=1)
@@ -34,7 +35,7 @@ def move(servo, angle):
         
 
 def readSerial(ser):
-    while True:
+    while connected:
         line = ser.readline()
         print (line)
         
@@ -44,8 +45,13 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
     
     # Function to handle connections and sending instructions to the Arduino
     def handle(self):        
+        connected = True
         print("Client connected")
-        while(True):
+        try:
+            Thread(target=readSerial, args=(ser,)).start()
+        except Exception, errtxt:
+            print errtxt
+        while(connected):
             self.data = self.request.recv(2)
             if(self.data == ""):
                 print("Client disconnected")
@@ -55,12 +61,10 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
                 angle = ord(self.data[1])
                 if(servo > 0 and servo< 4):
                     move(servo, angle)
+                    
+        connected = False
 
 
-try:
-    Thread(target=readSerial, args=(ser,)).start()
-except Exception, errtxt:
-        print errtxt
 # Define socket server settings
 socketAddress = '0.0.0.0'
 socketPort = 10000
