@@ -31,7 +31,7 @@ def move(servo, angle):
         ser.flush()
         print("Command sent to servo "  + str(servo) + " angle = " +str(angle))
     else:
-        print "Servo angle must be an integer between 0 and 180. Now it's " + str(angle)+ "\n"
+        print "Servo angle must be a number between 0 and 180. Now it's " + str(angle)+ "\n"
         
 
 def readSerial(ser):

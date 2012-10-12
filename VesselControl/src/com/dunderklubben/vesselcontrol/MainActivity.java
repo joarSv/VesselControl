@@ -112,6 +112,8 @@ public class MainActivity extends Activity implements SensorEventListener  {
     	}	
     	if(stay_awake)
     		wakeLock.release();
+    	
+    	PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(settingsListener);
     }
     
     @Override
@@ -124,6 +126,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
     		connect(null);
     		paused = false;
     	}
+    	PreferenceManager.getDefaultSharedPreferences(this).registerOnSharedPreferenceChangeListener(settingsListener);
     }
     
     @Override
@@ -134,6 +137,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
     	if(client.isConnected()) {
     		client.close();
     		sensorManager.unregisterListener(this);
+    		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(settingsListener);
     	}
     }
     //Click event that tries to connect to the given server
