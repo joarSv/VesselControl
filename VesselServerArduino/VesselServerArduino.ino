@@ -6,29 +6,22 @@
 */
 
 #include <Servo.h>
-
-// Initialize voltmeter variables
-int analogInput = 0;
-float value = 0.0;
-float vOut = 0.0;
-float vIn = 0.0;
-// Value of resistors
-float r1 = 47400.0;
-float r2 = 3840.0;
-
+#include <AFMotor.h>
 // Initialize servos
 Servo servoX;
 Servo servoY;
+//AF_DCMotor motor(3);
 
 void setup() 
 {
-  pinMode(analogInput, INPUT);
-  
   servoX.attach(9);
   servoY.attach(10);
   
+  //motor.setSpeed(200);
+  //motor.run(RELEASE);
+  
   Serial.begin(9600);
-  Serial.println("Arduino available");
+  Serial.println("Arduino Uno available");
 }
 
 void loop() 
@@ -41,12 +34,7 @@ void loop()
       {
         int servo = Serial.read();
         int angle = Serial.read();  
-        moveServo(servo, angle);
-        
-        value = analogRead(analogInput);
-        vOut = (value * 5.0) / 1024.0;
-        vIn = vOut / (r2/(r1+r2));
-        Serial.println(vIn);   
+        moveServo(servo, angle); 
       }
     }
 }
@@ -61,6 +49,8 @@ void moveServo(int servo, int angle)
       break;
     case 2:
       servoY.write(angle);
+      //motor.run(FORWARD);
+      //motor.setSpeed(angle);
       break;
     default:
       break;
