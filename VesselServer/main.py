@@ -9,19 +9,28 @@ from serial import Serial
 import SocketServer
 from threading import Thread
 
-# Define serial settings
+# Serial settings for Arduino Uno
 # Linux: /dev/ttyACM0
 # Windows: COM1
 port = 'COM4'#'/dev/ttyACM0'
 baudrate = 9600
 connected = False
 
-# Initiate serial connection
-ser = Serial(port, baudrate, timeout=1)
+# Serial settings for Arduino Nano
+portNano = 'COM5'#'/dev/ttyACM1'
+baudrateNano = 9600
 
+# Initiate serial connections
+try:
+    ser = Serial(port, baudrate, timeout=1)
+    serNano = Serial(portNano, baudrateNano, timeout=1)
+except Exception, error:
+    print error
+    
 print("Server connected to: " + ser.portstr)
+print("Server connected to: " + serNano.portstr)
 
-# This function sends instructions to the Arduino
+# This function sends instructions to the Arduino Uno
 def move(servo, angle):
     if (0 <= angle <= 180):
         ser.write(chr(255))
@@ -32,13 +41,12 @@ def move(servo, angle):
     else:
         print "Servo angle must be a number between 0 and 180. Now it's " + str(angle)+ "\n"
         
-
-def readSerial(ser):
+# Function to read sensor data from Arduino Nano
+def readSerial(serNano):
     while True:
-        line = ser.readline()
+        line = serNano.readline()
         print (line)
         
-
 # This class contains the socket server
 class MyTCPHandler(SocketServer.BaseRequestHandler):
     
@@ -46,10 +54,6 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
     def handle(self):        
         connected = True
         print("Client connected")
-        try:
-            Thread(target=readSerial, args=(ser,)).start()
-        except Exception, errtxt:
-            print errtxt
         while(connected):
             self.data = self.request.recv(2)
             if(self.data == ""):
@@ -62,6 +66,11 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
                     move(servo, angle)
                     
         connected = False
+        
+try:
+    Thread(target=readSerial, args=(serNano,)).start()
+except Exception, error:
+    print error
 
 # Define socket server settings
 socketAddress = '0.0.0.0'
@@ -71,9 +80,10 @@ socketPort = 10000
 server = SocketServer.TCPServer((socketAddress, socketPort), MyTCPHandler)
 server.serve_forever()
 
-# Closing serial connection
+# Close serial connections
 ser.close()
+serNano.close()
 
-# Closing socket connection
+# Close socket connection
 server.close_request(MyTCPHandler)
 print("Connection closed")
