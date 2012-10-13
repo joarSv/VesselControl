@@ -5,7 +5,6 @@
 #        Version 0.1
 #        
 
-
 from serial import Serial
 import SocketServer
 from threading import Thread
@@ -13,7 +12,7 @@ from threading import Thread
 # Define serial settings
 # Linux: /dev/ttyACM0
 # Windows: COM1
-port = 'COM1'#'/dev/ttyACM0'
+port = 'COM4'#'/dev/ttyACM0'
 baudrate = 9600
 connected = False
 
@@ -35,7 +34,7 @@ def move(servo, angle):
         
 
 def readSerial(ser):
-    while connected:
+    while True:
         line = ser.readline()
         print (line)
         
@@ -63,7 +62,6 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
                     move(servo, angle)
                     
         connected = False
-
 
 # Define socket server settings
 socketAddress = '0.0.0.0'
