@@ -7,18 +7,24 @@
 
 #include <Servo.h>
 #include <AFMotor.h>
-// Initialize servos
+
+// Initialize servos and motors
 Servo servoX;
 Servo servoY;
-//AF_DCMotor motor(3);
+//AF_DCMotor motor1(1);
+//AF_DCMotor motor2(2);
+//AF_DCMotor motor3(3);
+//AF_DCMotor motor4(4);
 
 void setup() 
 {
   servoX.attach(9);
   servoY.attach(10);
   
-  //motor.setSpeed(200);
-  //motor.run(RELEASE);
+  //mainMotor1.run(RELEASE);
+  //mainMotor2.run(RELEASE);
+  //bowThruster.run(RELEASE);
+  //sternThruster.run(RELEASE);
   
   Serial.begin(9600);
   Serial.println("Arduino Uno available");
@@ -46,12 +52,22 @@ void moveServo(int servo, int angle)
   {
     case 1:
       servoX.write(angle);
+      //if (angle >= 90)
+        //mainMotor1.run(FORWARD);
+        //mainMotor1.setSpeed(angle);
+      //else if (angle <= 89)
+        //mainMotor1.run(REVERSE);
+        //mainMotor1.setSpeed(angle);
       break;
     case 2:
       servoY.write(angle);
-      //motor.run(FORWARD);
-      //motor.setSpeed(angle);
-      break;
+      //if (angle >= 90)
+        //mainMotor2.run(FORWARD);
+        //mainMotor2.setSpeed(angle);
+      //else if (angle <= 89)
+        //mainMotor2.run(REVERSE);
+        //mainMotor2.setSpeed(angle);
+        break;
     default:
       break;
   }  
