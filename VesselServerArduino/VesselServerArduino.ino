@@ -14,13 +14,14 @@ Servo servoY;
 //AF_DCMotor motor1(1);
 //AF_DCMotor motor2(2);
 //AF_DCMotor motor3(3);
-//AF_DCMotor motor4(4);
+AF_DCMotor motor4(4);
 
 void setup() 
 {
   servoX.attach(9);
   servoY.attach(10);
   
+  motor4.run(RELEASE);
   //mainMotor1.run(RELEASE);
   //mainMotor2.run(RELEASE);
   //bowThruster.run(RELEASE);
@@ -34,40 +35,42 @@ void loop()
 { 
     if(Serial.available() >= 3)
     {
-      int data = 0;
-      data = Serial.read(); 
-      if(data == 255)
-      {
-        int servo = Serial.read();
-        int angle = Serial.read();  
-        moveServo(servo, angle); 
+      int id = 0;
+      id = Serial.read(); 
+      if(id >=1 && id <=6)   {
+        int value = Serial.read();
+        int dir = Serial.read();
+        moveServo(id, value, dir); 
       }
     }
 }
 
 // Method for moving servo
-void moveServo(int servo, int angle) 
+void moveServo(int id, int value, int dir) 
 {
-  switch(servo)
+  switch(id)
   {
     case 1:
-      servoX.write(angle);
-      //if (angle >= 90)
-        //mainMotor1.run(FORWARD);
-        //mainMotor1.setSpeed(angle);
-      //else if (angle <= 89)
-        //mainMotor1.run(REVERSE);
-        //mainMotor1.setSpeed(angle);
+      servoX.write(value);
       break;
     case 2:
-      servoY.write(angle);
-      //if (angle >= 90)
-        //mainMotor2.run(FORWARD);
-        //mainMotor2.setSpeed(angle);
-      //else if (angle <= 89)
-        //mainMotor2.run(REVERSE);
-        //mainMotor2.setSpeed(angle);
+      servoY.write(value);
         break;
+     case 4:
+       if(dir == 1) 
+       {
+          motor4.run(FORWARD);
+       }
+       else if(dir == 2) 
+       {
+          motor4.run(BACKWARD);
+       }
+       else if(dir == 0)
+       {
+          motor4.run(RELEASE); 
+       }
+       motor4.setSpeed(value);
+       break;
     default:
       break;
   }  

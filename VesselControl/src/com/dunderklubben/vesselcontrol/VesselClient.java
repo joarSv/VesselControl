@@ -5,7 +5,6 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.net.Socket;
-import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.concurrent.TimeUnit;
 
@@ -18,12 +17,6 @@ public class VesselClient {
 	public VesselClient () {
 		_connected = false;
 		_client = new Socket();
-		try {
-			_client.setSoTimeout(2000);
-		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 	}
 	
 	public boolean connect(String ip, int port) {
