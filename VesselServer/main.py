@@ -18,7 +18,7 @@ connected = False
 
 # Serial settings for Arduino Nano
 #portNano = '/dev/ttyACM1'#'COM5'
-baudrateNano = 9600
+#baudrateNano = 9600
 
 # Initiate serial connections
 try:
@@ -31,14 +31,12 @@ print("Server connected to: " + ser.portstr)
 #print("Server connected to: " + serNano.portstr)
 
 # This function sends instructions to the Arduino Uno
-def move(servo, angle):
-    if (0 <= angle <= 180):
-        ser.write(chr(servo))
-        ser.write(chr(angle))
+def move(id, value, direction):
+        ser.write(chr(id))
+        ser.write(chr(value))
+        ser.write(chr(direction))
         ser.flush()
-        print("Command sent to servo "  + str(servo) + " angle = " +str(angle))
-    else:
-        print "Servo angle must be a number between 0 and 180. Now it's " + str(angle)+ "\n"
+        print("Command sent to unit "  + str(id) + " value = " +str(value))
         
 # Function to read sensor data from Arduino Nano
 #def readSerial(serNano):
@@ -54,15 +52,16 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
         connected = True
         print("Client connected")
         while(connected):
-            self.data = self.request.recv(2)
+            self.data = self.request.recv(3)
             if(self.data == ""):
                 print("Client disconnected")
                 break
-            if(len(self.data) == 2):
-                servo = ord(self.data[0])
-                angle = ord(self.data[1])
-                if(servo > 0 and servo< 4):
-                    move(servo, angle)
+            if(len(self.data) == 3):
+                id = ord(self.data[0])
+                value = ord(self.data[1])
+                direction = ord(self.data[2])
+                if(id > 0 and id < 7):
+                    move(id, value, direction)
                     
         connected = False
         

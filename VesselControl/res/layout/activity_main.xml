@@ -31,5 +31,5 @@
         android:layout_below="@+id/txtIp"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
 </RelativeLayout>
