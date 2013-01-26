@@ -17,8 +17,8 @@ DualVNH5019MotorShield md;
 
 void setup() 
 {
-  servoX.attach(9);
-  servoY.attach(10);
+  servoX.attach(11);
+  //servoY.attach(3);
   md.init();
   
   Serial.begin(9600);
@@ -35,14 +35,6 @@ void loop()
         int value = Serial.read();
         int dir = Serial.read();
         moveServo(id, value, dir);
-        
-        // Motor 1, -400 to 400. Zero is full throttle.
-        md.setM1Speed(value);
-        stopIfFault();
-        
-        // Motor 2
-        md.setM2Speed(value);
-        stopIfFault();
       }
     }
 }
@@ -71,24 +63,14 @@ void moveServo(int id, int value, int dir)
       servoX.write(value);
       break;
     case 2:
-      servoY.write(value);
+    //  servoY.write(value);
         break;
      case 4:
-       if(dir == 1) 
-       {
-          motor4.run(FORWARD);
-       }
-       else if(dir == 2) 
-       {
-          motor4.run(BACKWARD);
-       }
-       else if(dir == 0)
-       {
-          motor4.run(RELEASE); 
-       }
-       motor4.setSpeed(value);
+       //motor4.run(FORWARD);
+       // Motor 1, -400 to 400. Zero is full throttle. 
+       value = (value-100)*4; //(-400 400)
+       md.setM1Speed(value);
+       stopIfFault();
        break;
-    default:
-      break;
-  }  
+  }
 }
