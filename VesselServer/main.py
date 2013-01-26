@@ -29,6 +29,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
                     move(number, value, direction)
                     
         connected = False
+        move(4,100,0)
         
 # This function sends instructions to the Arduino Uno
 def move(number, value, direction):
@@ -56,11 +57,13 @@ connected = False
 # Initiate serial connections
 try:
     ser = Serial(port, baudrate, timeout=1)
-#   serNano = Serial(portNano, baudrateNano, timeout=1)
-except Exception, error:
-    print "Error, couldn't establish connection to Arduino controller:" + error
+    # serNano = Serial(portNano, baudrateNano, timeout=1)
+    print("Server connected to: " + ser.portstr)
     
-print("Server connected to: " + ser.portstr)
+except Exception, error:
+    print "Error, connection with Arduino controller failed:"
+    print error
+    
 #print("Server connected to: " + serNano.portstr)
         
 # Function to read sensor data from Arduino Nano
