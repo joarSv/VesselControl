@@ -176,8 +176,9 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	public void onSensorChanged(SensorEvent event) {
 		if(client.isConnected()) {
 			float x = event.values[0], y = event.values[1];
-			byte byteX = map(x, 0, 180), byteY = map(y, 0, 255);
-			byte bX[] = {(byte)((int)1), byteX, (byte)((int)0)}, bY[] = {(byte)((int)4), byteY, (byte)((int)1)};
+			byte byteX = mapX(x, 0, 180), byteY = mapY(y, 0, 200);
+			//{number, value, direction}
+			byte bX[] = {(byte)((int)1), byteX, (byte)((int)0)}, bY[] = {(byte)((int)4), byteY, (byte)((int)0)};
 			
 			if(byteX < lastX-threshold || byteX > lastX+threshold) {
 				client.send(bX);
@@ -194,13 +195,21 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	//Maps a float value (-7.0 - 7.0) to a byte value (0 - 180)
 	//keeping the ratio i.e -7.0 will become 0 and 7.0 will become 180 and
 	//thus 0 will become 90 
-	public byte map(float value, int bMIN, int bMAX) {
+	public byte mapX(float value, int bMIN, int bMAX) {
 		float fMAX = 7, fMIN = -7;
 		//int bMAX = 180, bMIN = 0;
 		value = Math.max(fMIN,Math.min(fMAX, value));
 		
 		int result = (int)((value - fMIN) * (bMAX - bMIN) / (fMAX - fMIN) + bMIN);
 		
+		return (byte)result;
+	}
+	public byte mapY(float value, int bMIN, int bMAX) {
+		float fMAX = 7, fMIN = -7;
+		//int bMAX = 180, bMIN = 0;
+		value = Math.max(fMIN,Math.min(fMAX, value));
+		
+		int result = (int)((value - fMIN) * (bMAX - bMIN) / (fMAX - fMIN) + bMIN);
 		return (byte)result;
 	}
 }
