@@ -14,7 +14,7 @@ The wifi connection enables the raspberry to stream a webcam feed back to the op
 VesselControl is the Android client connecting to VesselServer running on the Raspberry Pi.
 
 <h2>VesselServer</h2>
-VesselServer is the python server software running on the Raspbery Pi.
+VesselServer is the python server software running on the Raspberry Pi.
 
 <h2>VesselServerArduino</h2>
 VesselServerArduino is the Arduino sketch running on the Uno connected with a Pololu Dual VNH5019 Motor Driver Shield operating the two main DC motors.
