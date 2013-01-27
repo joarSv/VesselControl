@@ -1,4 +1,4 @@
-<h1>VesselControll</h1>
+<h1>VesselControl</h1>
 
 VesselControl is a project aiming to remotely control and operate a model vessel. Equipment used is an Android smartphone, a Raspberry Pi with usb wifi-dongle and an Arduino Uno.
 
