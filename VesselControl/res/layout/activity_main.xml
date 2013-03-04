@@ -10,8 +10,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
-        android:text="Connect"
-        android:onClick="connect" />
+        android:onClick="connect"
+        android:text="Connect" />
 
     <EditText
         android:id="@+id/txtIp"
@@ -20,6 +20,7 @@
         android:layout_alignBottom="@+id/btnConnect"
         android:layout_alignParentLeft="true"
         android:ems="10"
+        android:inputType="none"
         android:text="10.0.0.1" />
 
     <TextView
@@ -31,5 +32,36 @@
         android:layout_below="@+id/txtIp"
         android:gravity="center"
         android:textAppearance="?android:attr/textAppearanceLarge" />
-
+
+    <SeekBar
+        android:id="@+id/seekBar1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/lblNotification"
+        android:layout_marginTop="33dp"
+        android:contentDescription="Rudder position"
+        android:max="180"
+        android:progress="90" />
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/lblNotification"
+        android:layout_centerHorizontal="true"
+        android:text="Rudder position"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <WebView
+        android:id="@+id/webView1"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="0dp"
+        android:layout_marginLeft="0dp"
+        android:layout_marginRight="0dp"
+        android:layout_marginTop="180dp" />
+
 </RelativeLayout>

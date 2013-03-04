@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
     <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android" android:title="@string/settings_title">
-        <SwitchPreference android:title="Keep screen awake" android:summaryOff="You're screen will not be keept awake" android:summaryOn="You're screen will be keept awake" android:key="stay_awake"/>
+        <SwitchPreference android:title="Keep screen awake" android:summaryOff="Your screen will not be keept awake" android:summaryOn="Your screen will be keept awake" android:key="stay_awake"/>
         <EditTextPreference android:dialogMessage="The sensitivity of the accelerometer" android:negativeButtonText="Cancel" android:positiveButtonText="Ok" android:defaultValue="5" android:dialogTitle="Sensitivity" android:key="threshold" android:title="Sensitivity"/>
     </PreferenceScreen>

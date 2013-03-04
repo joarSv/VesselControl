@@ -1,6 +1,13 @@
 package com.dunderklubben.vesselcontrol;
 
 import java.io.IOException;
+import java.net.URI;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+
 import android.view.SurfaceView;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -8,6 +15,7 @@ import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -23,12 +31,17 @@ import android.view.MenuItem;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.SeekBar;
+import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
 import android.widget.VideoView;
 
-public class MainActivity extends Activity implements SensorEventListener  {
+public class MainActivity extends Activity implements SensorEventListener, OnSeekBarChangeListener  {
 	PowerManager.WakeLock wakeLock;
 	SharedPreferences sharedPrefs;
 	
@@ -41,6 +54,8 @@ public class MainActivity extends Activity implements SensorEventListener  {
 	private VesselClient client;
 	private SensorManager sensorManager;
 	private TextView lblNotification;
+	private SeekBar sbRoder;
+	private WebView wv;
 	
 	//Settings
 	private boolean stay_awake;
@@ -66,7 +81,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
     @TargetApi(14)
 	@Override
     public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);        
+        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         
         //Get system services
@@ -83,7 +98,9 @@ public class MainActivity extends Activity implements SensorEventListener  {
         //Get controls
         lblNotification = (TextView)findViewById(R.id.lblNotification);
         btnConnect = (Button)findViewById(R.id.btnConnect);
-        txtIp = (EditText)findViewById(R.id.txtIp);        
+        txtIp = (EditText)findViewById(R.id.txtIp); 
+        sbRoder = (SeekBar)findViewById(R.id.seekBar1);
+        sbRoder.setEnabled(false);
         
         //Init misc values
         client = new VesselClient();
@@ -91,6 +108,9 @@ public class MainActivity extends Activity implements SensorEventListener  {
         lastY = 0;
         paused = false;
         
+        //Init camera view        
+        wv = (WebView) findViewById(R.id.webView1);
+        wv.loadUrl("http://10.0.0.1:8081/");
         if(stay_awake)
         	wakeLock.acquire();
         
@@ -125,6 +145,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
     		wakeLock.release();
     	
     	PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(settingsListener);
+    	sbRoder.setEnabled(false);
     }
     
     @Override
@@ -148,6 +169,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
     	if(client.isConnected()) {
     		client.close();
     		sensorManager.unregisterListener(this);
+    		sbRoder.setEnabled(false);
     		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(settingsListener);
     	}
     }
@@ -159,6 +181,16 @@ public class MainActivity extends Activity implements SensorEventListener  {
     		if(client.connect(txtIp.getText().toString())) {
     			btnConnect.setText("Disconnect");
     			sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
+    			sbRoder.setOnSeekBarChangeListener(this);
+        		sbRoder.setEnabled(true);
+        		
+        		//Camera
+        		//mv.setSource(MjpegInputStream.read("http://10.0.0.1:8081"));
+        		try{
+        		}
+        		catch(Exception e) {
+        			Log.d("", e.getMessage());
+        		}
     		} else {
     			lblNotification.setText("Could not connect to the server");
     		}
@@ -166,6 +198,7 @@ public class MainActivity extends Activity implements SensorEventListener  {
     		client.close();
     		sensorManager.unregisterListener(this);
     		btnConnect.setText("Connect");
+    		sbRoder.setEnabled(false);
     	}
     	btnConnect.setEnabled(true);
     }
@@ -181,11 +214,11 @@ public class MainActivity extends Activity implements SensorEventListener  {
 			byte bX[] = {(byte)((int)1), byteX, (byte)((int)0)}, bY[] = {(byte)((int)4), byteY, (byte)((int)0)};
 			
 			if(byteX < lastX-threshold || byteX > lastX+threshold) {
-				client.send(bX);
+			//	client.send(bX);
 				lastX = byteX; 
 			}
 			if(byteY < lastY-threshold || byteY > lastY+threshold ) {
-				client.send(bY);
+			//	client.send(bY);
 				lastY = byteY;
 			}
 		}
@@ -212,4 +245,14 @@ public class MainActivity extends Activity implements SensorEventListener  {
 		int result = (int)((value - fMIN) * (bMAX - bMIN) / (fMAX - fMIN) + bMIN);
 		return (byte)result;
 	}
+
+	public void onProgressChanged(SeekBar seekBar, int progress,
+			boolean fromUser) {
+		byte bX[] = {(byte)((int)1), (byte)progress, (byte)((int)0)};
+		client.send(bX);
+	}
+
+	public void onStartTrackingTouch(SeekBar seekBar) {}
+
+	public void onStopTrackingTouch(SeekBar seekBar) {}
 }

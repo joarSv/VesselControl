@@ -19,7 +19,7 @@ void setup()
 {
   servoX.attach(11);
   //servoY.attach(3);
-  md.init();
+ // md.init();
   
   Serial.begin(9600);
   Serial.println("Arduino Uno available");
@@ -68,9 +68,9 @@ void moveServo(int id, int value, int dir)
      case 4:
        //motor4.run(FORWARD);
        // Motor 1, -400 to 400. Zero is full throttle. 
-       value = (value-100)*4; //(-400 400)
-       md.setM1Speed(value);
-       stopIfFault();
+      // value = (value-100)*4; //(-400 400)
+       //md.setM1Speed(value);
+       //stopIfFault();
        break;
   }
 }
