@@ -6,8 +6,12 @@
 #        
 
 from serial import Serial
-import SocketServer
+import SocketServer, os
+#import RPi.GPIO as GPIO
 from threading import Thread
+
+#GPIO.setmode(GPIO.BOARD)
+#GPIO.setup(11, GPIO.OUT)
         
 # This class contains the socket server
 class MyTCPHandler(SocketServer.BaseRequestHandler):
@@ -38,6 +42,11 @@ def move(number, value, direction):
         ser.write(chr(direction))
         ser.flush()
         print("Command sent to unit "  + str(number) + " value = " +str(value))
+        
+#def shutDown():
+#    if GPIO.input(11): 
+#        os.system("poweroff")
+    
 
 # Socket server settings
 socketAddress = '0.0.0.0'
