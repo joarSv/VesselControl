@@ -1,21 +1,9 @@
 package com.dunderklubben.vesselcontrol;
 
-import java.io.IOException;
-import java.net.URI;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-
-import android.view.SurfaceView;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.media.MediaPlayer;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.preference.PreferenceManager;
@@ -28,34 +16,30 @@ import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Surface;
-import android.view.SurfaceHolder;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
-import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.SeekBar;
 import android.widget.SeekBar.OnSeekBarChangeListener;
 import android.widget.TextView;
-import android.widget.VideoView;
+import android.widget.ToggleButton;
 
 public class MainActivity extends Activity implements SensorEventListener, OnSeekBarChangeListener  {
 	PowerManager.WakeLock wakeLock;
 	SharedPreferences sharedPrefs;
 	
-	private boolean paused;
+	private boolean paused, toggleState = false;
 	private byte lastX, lastY;
 	
 	//Controls
 	private EditText txtIp;
-	private Button btnConnect;
+	private Button	btnConnect;
 	private VesselClient client;
 	private SensorManager sensorManager;
-	private TextView lblNotification;
-	private SeekBar sbRoder;
-	private WebView wv;
+	private TextView lblNotification, rudderAngle;
+	private SeekBar rudderBar;
+	private ToggleButton motionButton;
+	private SeekBar motorControl1, motorControl2;
 	
 	//Settings
 	private boolean stay_awake;
@@ -99,8 +83,13 @@ public class MainActivity extends Activity implements SensorEventListener, OnSee
         lblNotification = (TextView)findViewById(R.id.lblNotification);
         btnConnect = (Button)findViewById(R.id.btnConnect);
         txtIp = (EditText)findViewById(R.id.txtIp); 
-        sbRoder = (SeekBar)findViewById(R.id.seekBar1);
-        sbRoder.setEnabled(false);
+        rudderBar = (SeekBar)findViewById(R.id.rudderBar);
+        rudderBar.setEnabled(false);
+        motionButton = (ToggleButton)findViewById(R.id.motionButton);
+        motorControl1 = (SeekBar)findViewById(R.id.motorControl1);
+        motorControl1.setEnabled(false);
+        motorControl2 = (SeekBar)findViewById(R.id.motorControl2);
+        motorControl2.setEnabled(false);
         
         //Init misc values
         client = new VesselClient();
@@ -108,13 +97,8 @@ public class MainActivity extends Activity implements SensorEventListener, OnSee
         lastY = 0;
         paused = false;
         
-        //Init camera view        
-        wv = (WebView) findViewById(R.id.webView1);
-        wv.loadUrl("http://10.0.0.1:8081/");
         if(stay_awake)
         	wakeLock.acquire();
-        
-        
     }
     
     @Override
@@ -145,7 +129,13 @@ public class MainActivity extends Activity implements SensorEventListener, OnSee
     		wakeLock.release();
     	
     	PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(settingsListener);
-    	sbRoder.setEnabled(false);
+    	motorControl1.setProgress(100);
+    	motorControl2.setProgress(100);
+    	rudderBar.setProgress(90);
+    	rudderBar.setEnabled(false);
+    	motorControl1.setEnabled(false);
+    	motorControl2.setEnabled(false);
+    	
     }
     
     @Override
@@ -169,7 +159,12 @@ public class MainActivity extends Activity implements SensorEventListener, OnSee
     	if(client.isConnected()) {
     		client.close();
     		sensorManager.unregisterListener(this);
-    		sbRoder.setEnabled(false);
+    		rudderBar.setProgress(90);
+    		motorControl1.setProgress(100);
+        	motorControl2.setProgress(100);
+        	rudderBar.setEnabled(false);
+    		motorControl1.setEnabled(false);
+        	motorControl2.setEnabled(false);
     		PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(settingsListener);
     	}
     }
@@ -181,50 +176,62 @@ public class MainActivity extends Activity implements SensorEventListener, OnSee
     		if(client.connect(txtIp.getText().toString())) {
     			btnConnect.setText("Disconnect");
     			sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_GAME);
-    			sbRoder.setOnSeekBarChangeListener(this);
-        		sbRoder.setEnabled(true);
+    			
+    			rudderBar.setOnSeekBarChangeListener(this);
+    			rudderBar.setProgress(90);
+        		rudderBar.setEnabled(true);
         		
-        		//Camera
-        		//mv.setSource(MjpegInputStream.read("http://10.0.0.1:8081"));
+        		motorControl1.setOnSeekBarChangeListener(this);
+        		motorControl2.setOnSeekBarChangeListener(this);
+        		
+        		motorControl1.setProgress(100);
+        		motorControl2.setProgress(100);
+        		motorControl1.setEnabled(true);
+            	motorControl2.setEnabled(true);
+        		
         		try{
         		}
         		catch(Exception e) {
         			Log.d("", e.getMessage());
         		}
     		} else {
-    			lblNotification.setText("Could not connect to the server");
+    			lblNotification.setText("Could not connect to the server!");
     		}
     	} else {
     		client.close();
     		sensorManager.unregisterListener(this);
     		btnConnect.setText("Connect");
-    		sbRoder.setEnabled(false);
+    		motorControl1.setEnabled(false);
+    		motorControl2.setEnabled(false);
+    		rudderBar.setEnabled(false);
     	}
     	btnConnect.setEnabled(true);
     }
 
 	public void onAccuracyChanged(Sensor sensor, int accuracy) {		
 	}
-	//Event that fetches the accelerometer values and sends them to the arduino
+	//Event that fetches the accelerometer values and sends them to the Arduino
 	public void onSensorChanged(SensorEvent event) {
-		if(client.isConnected()) {
-			float x = event.values[0], y = event.values[1];
-			byte byteX = mapX(x, 0, 180), byteY = mapY(y, 0, 200);
-			//{number, value, direction}
-			byte bX[] = {(byte)((int)1), byteX, (byte)((int)0)}, bY[] = {(byte)((int)4), byteY, (byte)((int)0)};
-			
-			if(byteX < lastX-threshold || byteX > lastX+threshold) {
-			//	client.send(bX);
-				lastX = byteX; 
-			}
-			if(byteY < lastY-threshold || byteY > lastY+threshold ) {
-			//	client.send(bY);
-				lastY = byteY;
-			}
+		if(client.isConnected() && toggleState) {
+				float x = event.values[0], y = event.values[1];
+				byte byteX = mapX(x, 0, 200), byteY = mapY(y, 0, 200);
+				//{number, value, direction}
+				byte bX[] = {(byte)((int)3), byteX, (byte)((int)0)}, bY[] = {(byte)((int)4), byteY, (byte)((int)0)};
+				
+				if(byteX < lastX-threshold || byteX > lastX+threshold) {
+					client.send(bX);
+					lastX = byteX; 
+				}
+				if(byteY < lastY-threshold || byteY > lastY+threshold ) {
+					client.send(bY);
+					lastY = byteY;
+				}
+					
 		}
 		else
 			sensorManager.unregisterListener(this);
 	}
+	
 	//Maps a float value (-7.0 - 7.0) to a byte value (0 - 180)
 	//keeping the ratio i.e -7.0 will become 0 and 7.0 will become 180 and
 	//thus 0 will become 90 
@@ -234,9 +241,9 @@ public class MainActivity extends Activity implements SensorEventListener, OnSee
 		value = Math.max(fMIN,Math.min(fMAX, value));
 		
 		int result = (int)((value - fMIN) * (bMAX - bMIN) / (fMAX - fMIN) + bMIN);
-		
 		return (byte)result;
 	}
+	
 	public byte mapY(float value, int bMIN, int bMAX) {
 		float fMAX = 7, fMIN = -7;
 		//int bMAX = 180, bMIN = 0;
@@ -248,11 +255,39 @@ public class MainActivity extends Activity implements SensorEventListener, OnSee
 
 	public void onProgressChanged(SeekBar seekBar, int progress,
 			boolean fromUser) {
-		byte bX[] = {(byte)((int)1), (byte)progress, (byte)((int)0)};
-		client.send(bX);
-	}
+		switch (seekBar.getId()) {
+		
+		case R.id.rudderBar:
+			byte bX[] = {(byte)((int)1), (byte)progress, (byte)((int)0)};
+			client.send(bX);
+			//rudderAngle.setText(progress);
+			break;
 
+	    case R.id.motorControl1:
+	    	byte bM1[] = {(byte)((int)3), (byte)progress, (byte)((int)0)};
+			client.send(bM1);
+	        break;
+
+	    case R.id.motorControl2:
+	    	byte bM2[] = {(byte)((int)4), (byte)progress, (byte)((int)0)};
+			client.send(bM2);
+	        break;
+	    }
+		
+	}
+	
 	public void onStartTrackingTouch(SeekBar seekBar) {}
 
 	public void onStopTrackingTouch(SeekBar seekBar) {}
+	
+	public void onToggleClicked(View view) {
+	    // Is the toggle on?
+	    boolean on = ((ToggleButton) view).isChecked();
+	    
+	    if (on) {
+	        toggleState = true;
+	    } else {
+	        toggleState = false;
+	    }
+	}
 }
