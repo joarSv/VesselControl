@@ -33,6 +33,9 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
                     move(number, value, direction)
                     
         connected = False
+        # Stop motors when client disconnect
+        move(1,90,0)
+        move(3,100,0)
         move(4,100,0)
         
 # This function sends instructions to the Arduino Uno
