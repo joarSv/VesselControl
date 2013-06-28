@@ -138,6 +138,7 @@ Desktop.ini
 #############
 
 *.py[co]
+*~
 
 # Packages
 *.egg
