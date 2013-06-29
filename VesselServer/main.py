@@ -6,7 +6,7 @@
 #        
 
 from serial import Serial
-import SocketServer, os
+import SocketServer, os, time, logging
 #import RPi.GPIO as GPIO
 from threading import Thread
 
@@ -17,13 +17,15 @@ from threading import Thread
 class MyTCPHandler(SocketServer.BaseRequestHandler):
     
     # Function to handle connections and sending instructions to the Arduino
-    def handle(self):        
-        connected = True
+    def handle(self):       
+	connected = True
         print("Client connected")
+	printLog(str(time.time()) + ': Client connected')
         while(connected):
             self.data = self.request.recv(3)
             if(self.data == ""):
                 print("Client disconnected")
+		printLog(str(time.time()) + ': Client disconnected')
                 break
             if(len(self.data) == 3):
                 number = ord(self.data[0])
@@ -34,6 +36,7 @@ class MyTCPHandler(SocketServer.BaseRequestHandler):
                     
         connected = False
         # Stop motors when client disconnect
+	printLog(str(time.time()) + ': Motors de-attached')
         move(1,90,0)
         move(3,100,0)
         move(4,100,0)
@@ -43,13 +46,19 @@ def move(number, value, direction):
         ser.write(chr(number))
         ser.write(chr(value))
         ser.write(chr(direction))
-        ser.flush()
-        print("Command sent to unit "  + str(number) + " value = " +str(value))
+        ser.flush()	
+	printLog(str(time.time()) + ': Moving ' + str(number) + ' to ' + str(value))
+        print("Command sent to unit "  + str(number) + " value = " + str(value))
+
+def printLog(message):
+	f.write(message + '\n')
+	f.flush()
         
 #def shutDown():
 #    if GPIO.input(11): 
 #        os.system("poweroff")
     
+f = open('VesselServer.log','w')
 
 # Socket server settings
 socketAddress = '0.0.0.0'
@@ -71,10 +80,12 @@ try:
     ser = Serial(port, baudrate, timeout=1)
     # serNano = Serial(portNano, baudrateNano, timeout=1)
     print("Server connected to: " + ser.portstr)
+    printLog(str(time.time()) + ': Server connected to:' + ser.portstr)
     
 except Exception, error:
     print "Error, connection with Arduino controller failed:"
     print error
+    printLog(str(time.time()) + ': Error, connection with Arduino failed: ' + error)
     
 #print("Server connected to: " + serNano.portstr)
         
@@ -100,3 +111,5 @@ ser.close()
 # Close socket connection
 server.close_request(MyTCPHandler)
 print("Connection closed")
+printLog(str(time.time()) + ': Connection closed')
+f.close()
