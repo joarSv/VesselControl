@@ -2,29 +2,28 @@
 #    VesselServer
 #        Created 2012-10-09
 #        Rasmus Jansson and Joar Svensson
-#        Version 0.1
+#        Version 0.2
+#	 https://github.com/JoarSvensson/VesselControl.git
 #        
 
 from serial import Serial
 import SocketServer, os, time, logging
 #import RPi.GPIO as GPIO
-from threading import Thread
 
 #GPIO.setmode(GPIO.BOARD)
 #GPIO.setup(11, GPIO.OUT)
         
 # This class contains the socket server
-class MyTCPHandler(SocketServer.BaseRequestHandler):
+class VesselTCPHandler(SocketServer.BaseRequestHandler):
     
     # Function to handle connections and sending instructions to the Arduino
     def handle(self):       
 	connected = True
-        print("Client connected")
 	printLog(str(time.time()) + ': Client connected')
-        while(connected):
+        
+	while(connected):
             self.data = self.request.recv(3)
-            if(self.data == ""):
-                print("Client disconnected")
+            if(self.data == ""):		
 		printLog(str(time.time()) + ': Client disconnected')
                 break
             if(len(self.data) == 3):
@@ -48,8 +47,8 @@ def move(number, value, direction):
         ser.write(chr(direction))
         ser.flush()	
 	printLog(str(time.time()) + ': Moving ' + str(number) + ' to ' + str(value))
-        print("Command sent to unit "  + str(number) + " value = " + str(value))
 
+# This function writes messages to log file
 def printLog(message):
 	f.write(message + '\n')
 	f.flush()
@@ -57,7 +56,8 @@ def printLog(message):
 #def shutDown():
 #    if GPIO.input(11): 
 #        os.system("poweroff")
-    
+
+# Initiate log file    
 f = open('VesselServer.log','w')
 
 # Socket server settings
@@ -71,37 +71,17 @@ port = '/dev/ttyACM0'#'COM4'
 baudrate = 9600
 connected = False
 
-# Serial settings for Arduino Nano
-#portNano = '/dev/ttyACM1'#'COM5'
-#baudrateNano = 9600
-
 # Initiate serial connections
 try:
     ser = Serial(port, baudrate, timeout=1)
-    # serNano = Serial(portNano, baudrateNano, timeout=1)
-    print("Server connected to: " + ser.portstr)
-    printLog(str(time.time()) + ': Server connected to:' + ser.portstr)
+    printLog(str(time.time()) + ': Server connected to:' + str(ser.portstr))
     
 except Exception, error:
-    print "Error, connection with Arduino controller failed:"
-    print error
-    printLog(str(time.time()) + ': Error, connection with Arduino failed: ' + error)
+    printLog(str(time.time()) + ': Error, connection with Arduino failed: ' + str(error))
     
-#print("Server connected to: " + serNano.portstr)
-        
-# Function to read sensor data from Arduino Nano
-#def readSerial(serNano):
-#    while True:
-#        line = serNano.readline()
-#        print (line)
-        
-#try:
-#    Thread(target=readSerial, args=(serNano,)).start()
-#except Exception, error:
-#    print error
 
 # Initiate socket server
-server = SocketServer.TCPServer((socketAddress, socketPort), MyTCPHandler)
+server = SocketServer.TCPServer((socketAddress, socketPort), VesselTCPHandler)
 server.serve_forever()
 
 # Close serial connections
@@ -109,7 +89,8 @@ ser.close()
 #serNano.close()
 
 # Close socket connection
-server.close_request(MyTCPHandler)
-print("Connection closed")
-printLog(str(time.time()) + ': Connection closed')
+server.close_request(VesselTCPHandler)
+
+# Print to log
+printLog(str(time.time()) + ': Connection closed\n-----------------------------------------------------------')
 f.close()
