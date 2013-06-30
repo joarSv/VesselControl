@@ -7,7 +7,7 @@
 #        
 
 from serial import Serial
-import SocketServer, os, time, logging
+import SocketServer, os, time
 #import RPi.GPIO as GPIO
 
 #GPIO.setmode(GPIO.BOARD)
@@ -86,7 +86,6 @@ server.serve_forever()
 
 # Close serial connections
 ser.close()
-#serNano.close()
 
 # Close socket connection
 server.close_request(VesselTCPHandler)
