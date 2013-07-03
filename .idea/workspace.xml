@@ -80,8 +80,12 @@
       <file leaf-file-name="MainActivity.java" pinned="false" current="true" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/VesselControl/src/com/dunderklubben/vesselcontrol/MainActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state line="274" column="82" selection-start="9138" selection-end="9138" vertical-scroll-proportion="1.3780822" vertical-offset="3307" max-vertical-offset="4245">
-              <folding />
+            <state line="205" column="42" selection-start="7457" selection-end="7457" vertical-scroll-proportion="0.42465752" vertical-offset="2920" max-vertical-offset="4605">
+              <folding>
+                <element signature="imports" expanded="true" />
+                <element signature="e#1479#2107#0" expanded="true" />
+                <element signature="e#2100#2101#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -427,7 +431,11 @@
     <entry file="file://$PROJECT_DIR$/VesselControl/src/com/dunderklubben/vesselcontrol/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
         <state line="41" column="27" selection-start="1382" selection-end="1382" vertical-scroll-proportion="0.0" vertical-offset="270" max-vertical-offset="4155">
-          <folding />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1479#2107#0" expanded="true" />
+            <element signature="e#2100#2101#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
@@ -448,8 +456,12 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/VesselControl/src/com/dunderklubben/vesselcontrol/MainActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="274" column="82" selection-start="9138" selection-end="9138" vertical-scroll-proportion="1.3780822" vertical-offset="3307" max-vertical-offset="4245">
-          <folding />
+        <state line="205" column="42" selection-start="7457" selection-end="7457" vertical-scroll-proportion="0.42465752" vertical-offset="2920" max-vertical-offset="4605">
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#1479#2107#0" expanded="true" />
+            <element signature="e#2100#2101#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
