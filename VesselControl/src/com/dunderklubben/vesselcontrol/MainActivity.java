@@ -17,12 +17,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.SeekBar;
+import android.widget.*;
 import android.widget.SeekBar.OnSeekBarChangeListener;
-import android.widget.TextView;
-import android.widget.ToggleButton;
 
 public class MainActivity extends Activity implements SensorEventListener, OnSeekBarChangeListener  {
 	PowerManager.WakeLock wakeLock;
@@ -32,6 +28,7 @@ public class MainActivity extends Activity implements SensorEventListener, OnSee
 	private byte lastX, lastY;
 	
 	//Controls
+    private CheckBox dualControl;
 	private EditText txtIp;
 	private Button	btnConnect;
 	private VesselClient client;
@@ -90,6 +87,7 @@ public class MainActivity extends Activity implements SensorEventListener, OnSee
         motorControl1.setEnabled(false);
         motorControl2 = (SeekBar)findViewById(R.id.motorControl2);
         motorControl2.setEnabled(false);
+        dualControl = (CheckBox)findViewById(R.id.dualControl);
         
         //Init misc values
         client = new VesselClient();
@@ -266,11 +264,17 @@ public class MainActivity extends Activity implements SensorEventListener, OnSee
 	    case R.id.motorControl1:
 	    	byte bM1[] = {(byte)((int)3), (byte)progress, (byte)((int)0)};
 			client.send(bM1);
-	        break;
+            if (dualControl.isChecked() && motorControl2.getProgress() != progress) {
+                motorControl2.setProgress(progress);
+            }
+            break;
 
 	    case R.id.motorControl2:
 	    	byte bM2[] = {(byte)((int)4), (byte)progress, (byte)((int)0)};
 			client.send(bM2);
+            if (dualControl.isChecked() && motorControl1.getProgress() != progress) {
+                motorControl1.setProgress(progress);
+            }
 	        break;
 	    }
 		

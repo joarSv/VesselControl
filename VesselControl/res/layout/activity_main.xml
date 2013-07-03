@@ -52,7 +52,7 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
         android:columnCount="3"
-        android:orientation="horizontal" >
+        android:orientation="horizontal" android:layout_below="@+id/rudderBar">
 
         <LinearLayout
             android:id="@+id/LinearLayout1"
@@ -65,13 +65,13 @@
 
             <SeekBar
                 android:id="@+id/motorControl1"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
                 android:max="200"
                 android:maxHeight="40dp"
                 android:minHeight="40dp"
                 android:progress="100"
-                android:rotation="270" />
+                android:rotation="270"/>
 
         </LinearLayout>
 
@@ -85,8 +85,8 @@
 
             <SeekBar
                 android:id="@+id/motorControl2"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
                 android:max="200"
                 android:maxHeight="40dp"
                 android:minHeight="40dp"
@@ -118,5 +118,11 @@
         android:text="@string/rudderPosition"
         android:textAppearance="?android:attr/textAppearanceMedium"
         tools:ignore="HardcodedText" />
+	<CheckBox
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:layout_marginTop="75dp"
+			android:text="Dual Control"
+			android:id="@+id/dualControl" android:layout_below="@+id/motionButton" android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>
