@@ -29,7 +29,7 @@ DualVNH5019MotorShield md;
 void setup() 
 {
 	md.init();
-  servoInit();
+  //servoInit();
   
   Serial.begin(9600);
   Serial.println("Arduino Uno available");
@@ -142,24 +142,27 @@ void moveServo(int id, int value, int dir)
   {
     case 1:
     	outputValue = map(value, 0, 180, 1000, 2000); 
-      servoSetPosition(outputValue);
+      //servoSetPosition(outputValue);
       break;
     case 2:
     //  servoY.write(value);
         break;
     case 3:
-       //motor4.run(FORWARD);
-       // Motor 2, -400 to 400. Zero is full throttle. 
-       value = (value-100)*4; //(-400 400)
-       md.setM1Speed(value);
+       // Motor 2, -400 to 400. Zero is no throttle. 
+       //value = (value-100)*4; //(-400 400)
+       //value = map((value-100)*4, -400, 400, -175, 175); 
+       md.setM1Speed(map((value-100)*4, -400, 400, -175, 175));
        stopIfFault();
+       Serial.print("M1: ");
+       Serial.println(md.getM1CurrentMilliamps());
        break;
     case 4:
-       //motor4.run(FORWARD);
-       // Motor 1, -400 to 400. Zero is full throttle. 
-       value = (value-100)*4; //(-400 400)
-       md.setM2Speed(value);
+       // Motor 1, -400 to 400. Zero is no throttle. 
+       //value = (value-75)*4; //(-400 400)
+       md.setM2Speed(map((value-100)*4, -400, 400, -175, 175));
        stopIfFault();
+       Serial.print("M2: ");
+       Serial.println(md.getM2CurrentMilliamps());
        break;
   }
 }
