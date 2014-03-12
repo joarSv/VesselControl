@@ -10,6 +10,8 @@ The whole setup is currently powered by two 6 volt lead-acid batteries often fou
 We are currently using Samsung S3 smartphones to operate the vessel. The Android application is using accelerometer readings mapped to suit the servo and motor operations.
 The wifi connection enables the raspberry to stream a webcam feed back to the operator, this is currently achived by using the Linux software Motion together with a HD webcam.
 
+![alt tag](http://url/to/img.png)
+
 <h2>VesselControl</h2>
 VesselControl is the Android client connecting to VesselServer running on the Raspberry Pi.
 
